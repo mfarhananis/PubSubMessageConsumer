@@ -59,8 +59,11 @@
 				<version>2.0.0</version>
 				<configuration>
 					<to>
-						<image>gcr.io/PROJECT_ID/pubsubconsumer</image>
-						<tags>v1</tags>
+						<image>gcr.io/dz-playground-4711/pubsubconsumer</image>
+						<tags>
+							<tag>v1</tag>
+							<tag>latest</tag>
+						</tags>
 					</to>
 				</configuration>
 			</plugin>
