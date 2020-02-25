@@ -1,12 +1,9 @@
 package com.fsoft.projects.ctrl;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectInputStream;
+import java.nio.charset.Charset;
 import java.util.Base64;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fsoft.projects.model.Body;
 import com.fsoft.projects.model.Message;
 import com.fsoft.projects.model.TradeDaten;
@@ -36,28 +34,26 @@ public class PubSubController {
 		Message message = body.getMessage();
 		if (message == null) {
 			String msg = "Bad Request: invalid Pub/Sub message format";
-			System.out.println(msg);
+			LOG.info(msg);
 			return ResponseEntity.badRequest().body(msg);
 		}
 
 		String data = message.getData();
 		
+		
+		
+		ObjectMapper mapper = new ObjectMapper();
+		String strJson = new String(Base64.getDecoder().decode(data), Charset.forName("UTF-8"));
+		LOG.info(strJson);
+		
 		TradeDaten trade = null;
-		if (!StringUtils.isEmpty(data)) {
-			ByteArrayInputStream bis = new ByteArrayInputStream(Base64.getDecoder().decode(data));
-			ObjectInput in;
-			try {
-				in = new ObjectInputStream(bis);
-				trade = (TradeDaten) in.readObject();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
+		try {
+			trade = mapper.readValue(Base64.getDecoder().decode(data), TradeDaten.class);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		
 		
 		String msg = (trade != null) ? "Recieved " + trade.toString() + "!": "Problem Serial/Deserial";
 

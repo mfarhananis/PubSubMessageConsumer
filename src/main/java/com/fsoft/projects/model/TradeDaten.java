@@ -7,6 +7,10 @@ public class TradeDaten {
 	private String id;
 	Map<String, Object> daten;
 	
+	public TradeDaten() {
+		
+	}
+	
 	public String getId() {
 		return id;
 	}
